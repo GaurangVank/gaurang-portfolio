@@ -1,0 +1,56 @@
+/* Motion for the standalone About page. The original layout remains the base. */
+.about__greeting { min-height: 2.2em; height: auto; }
+.about__greeting span { min-height: 1.1em; }
+.about__greeting.is-typing span:last-child::after { content: ''; display: inline-block; height: .8em; border-right: 2px solid currentColor; margin-left: .08em; animation: about-caret .65s steps(1) infinite; }
+@keyframes about-caret { 50% { opacity: 0; } }
+.about__row { align-items: flex-start; }
+.about__figure { object-position: center 15%; }
+.about__plate { object-position: center top; }
+@media (min-width: 1280px) {
+  .about__figure-hold, .is-smooth .about__figure-hold { position: sticky; top: 12vh; align-self: flex-start; }
+  .about__figure-hold .about__figure { width: 100%; height: auto; }
+}
+.about__playcard { pointer-events: auto; cursor: pointer; }
+.about__playcard:focus-visible { outline: 2px solid var(--crimson); outline-offset: 5px; }
+.about__hand { overflow: visible; }
+.about__playcard.is-picked { z-index: 20 !important; }
+.about__playcard-tilt { transition: transform .24s cubic-bezier(.22,1,.36,1); }
+.about__playcard.is-hovered { z-index: 30 !important; }
+.about__playcard.is-hovered .about__playcard-tilt { transform: translateY(-1.5cqw) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); }
+.about__playcard.is-hovered .about__playcard-face { box-shadow: 0 1.8cqw 3.8cqw #12121230; }
+.about__playcard-face { transition: background-color .28s ease, box-shadow .28s ease; }
+.about__playcard-logo { display: grid; place-items: center; font-size: 11cqw; font-weight: 600; line-height: 1; }
+.about__playcard-logo svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.about__playcard-pip svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.about__cards { overflow: visible; }
+.about__flow.about-native .about__card { left: 0 !important; top: 0 !important; opacity: 1; will-change: transform; transition: none; }
+.about__flow.about-native .about__card--repeat { display: block; }
+.about__flow.about-native .about__wave { visibility: visible; }
+.about-native-reveal { transition: opacity .75s ease, translate .75s cubic-bezier(.22,1,.36,1); }
+.about-native-reveal[data-visible="false"] { opacity: 0; translate: 0 24px; }
+.about-native-reveal[data-visible="true"] { opacity: 1; translate: 0 0; }
+.roadmap__stop { transition: opacity .5s, translate .6s; }
+.roadmap__stop[data-visible="false"] { opacity: 0; translate: 0 20px; }
+.roadmap__stop[data-visible="true"] { opacity: 1; translate: 0 0; }
+.roadmap__words { min-width: 0; }
+.roadmap__title, .roadmap__place { overflow: visible; overflow-wrap: anywhere; }
+.roadmap__title span, .roadmap__place span { max-width: 100%; }
+.roadmap__line { width: 100%; height: 100%; overflow: visible; }
+.roadmap__path { stroke-width: 6px; transition: stroke-dashoffset .12s linear; }
+.roadmap__disc { z-index: 1; transition: transform .35s cubic-bezier(.22,1,.36,1), background-color .35s ease, opacity .35s ease; }
+.roadmap__current { color: var(--cream); font-size: max(9px, 2.5cqw); line-height: 1.1; }
+.roadmap__disc::after { content: ''; position: absolute; inset: -5px; border: 1px solid var(--crimson); border-radius: 50%; opacity: 0; transform: scale(.92); transition: opacity .3s ease, transform .4s cubic-bezier(.22,1,.36,1); pointer-events: none; }
+.roadmap__disc:hover, .roadmap__disc:focus-visible { transform: scale(1.045); }
+.roadmap__disc:hover::after, .roadmap__disc:focus-visible::after, .roadmap__stop[data-trail-active] .roadmap__disc::after { opacity: .85; transform: scale(1); }
+.roadmap__stop[data-trail-active] .roadmap__disc::after { animation: roadmap-local-ripple 1.8s ease-out infinite; }
+@keyframes roadmap-local-ripple { 0% { opacity: .8; transform: scale(.98); } 100% { opacity: 0; transform: scale(1.15); } }
+@media (max-width: 767px) {
+  .about__figure-hold { position: static; }
+  .about__greeting { font-size: clamp(28px, 7vw, 54px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-native-reveal, .roadmap__stop { opacity: 1 !important; translate: none !important; transition: none; }
+  .roadmap__path, .roadmap__disc, .roadmap__disc::after, .about__playcard-tilt, .about__playcard-face { transition: none !important; }
+  .roadmap__stop[data-trail-active] .roadmap__disc::after { animation: none; }
+  .about__greeting.is-typing span:last-child::after { display: none; }
+}

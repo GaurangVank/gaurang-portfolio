@@ -1,0 +1,356 @@
+/* Local resilience and interaction layer for the mirrored portfolio. */
+/* Keep removed navigation and gallery sections hidden if the original app hydrates. */
+.extras, a[href$="#extras"] { display: none !important; }
+.td__clip[data-clip="handtracking"] { display: none !important; }
+@media (min-width: 1280px) {
+  .project[data-project="touchdesigner-visuals"] .td__reel {
+    box-sizing: border-box;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: calc(18 * var(--td-u));
+    padding-inline: calc(127 * var(--td-u));
+  }
+  .project[data-project="touchdesigner-visuals"] .td__clip {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--td-w) / var(--td-h);
+  }
+}
+@font-face {
+  font-family: "Portfolio Archivo";
+  src: url("../_next/static/immutable/media/75affa71d1e2f6a7-s.p.13rul5q9jl2r0.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Portfolio Archivo Narrow";
+  src: url("../_next/static/immutable/media/f595ef078a6ec598-s.p.27uryrwt-noeg.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Portfolio Disket Mono";
+  src: url("../_next/static/immutable/media/Disket_Mono_Regular-s.1ylywy1ag2gww.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --font-archivo: "Portfolio Archivo", Archivo, Arial, sans-serif;
+  --font-archivo-narrow: "Portfolio Archivo Narrow", "Arial Narrow", sans-serif;
+  --font-disket: "Portfolio Disket Mono", monospace;
+}
+
+html.site-local-ready,
+html.site-local-ready body {
+  overflow-x: clip;
+}
+
+html.site-local-ready .loader {
+  pointer-events: none !important;
+}
+
+html.site-local-ready .landing__wordmark .wordmark,
+html.site-local-ready .archive__heading .archive__a,
+html.site-local-ready .archive__heading .archive__b,
+html.site-local-ready .extras__heading span,
+html.site-local-ready [data-typed] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none;
+}
+
+/* Project cards: pointer-position colour reveal, lift and soft 3D tilt. */
+.card {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  perspective: 1100px;
+  contain: layout style;
+}
+
+.card__link {
+  position: relative;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1), color 220ms ease;
+}
+
+.card__frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #d8d3c4;
+}
+
+.card__frame::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgb(255 255 255 / .28), transparent 34%);
+  mix-blend-mode: soft-light;
+  transition: opacity 280ms ease;
+}
+
+.card__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 720ms cubic-bezier(.16,1,.3,1), filter 420ms ease, clip-path 520ms cubic-bezier(.2,.8,.2,1);
+  will-change: transform, clip-path;
+}
+
+.card__img--base {
+  filter: grayscale(1) contrast(.92) brightness(.9);
+  transform: scale(1.015);
+}
+
+.card__img--colour {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  clip-path: circle(0% at var(--pointer-x) var(--pointer-y));
+}
+
+.card__text {
+  transform: translateZ(18px);
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1);
+}
+
+.card__title,
+.card__caption {
+  transition: transform 420ms cubic-bezier(.2,.8,.2,1), color 220ms ease;
+}
+
+.card.is-project-hovered {
+  z-index: 4;
+}
+
+.card.is-project-hovered .card__link {
+  transition-duration: 80ms;
+}
+
+.card.is-project-hovered .card__frame::after {
+  opacity: 1;
+}
+
+.card.is-project-hovered .card__img--base {
+  transform: scale(1.06);
+  filter: grayscale(.15) contrast(1.02) brightness(.96);
+}
+
+.card.is-project-hovered .card__img--colour {
+  clip-path: circle(75% at var(--pointer-x) var(--pointer-y));
+  transform: scale(1.065);
+}
+
+.card.is-project-hovered .card__title {
+  color: var(--crimson, #e44436);
+  transform: translateX(.12em);
+}
+
+.card.is-project-hovered .card__caption {
+  transform: translateX(.3em);
+}
+
+.project-cursor {
+  position: fixed;
+  z-index: 9998;
+  left: 0;
+  top: 0;
+  width: 76px;
+  height: 76px;
+  pointer-events: none;
+  opacity: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--crimson, #e44436);
+  border-radius: 50%;
+  color: var(--cream, #f0ecdf);
+  background: var(--crimson, #e44436);
+  font: 600 11px/1 var(--font-archivo-narrow);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  transform: translate3d(-50%, -50%, 0) scale(.55);
+  transition: opacity 180ms ease, transform 260ms cubic-bezier(.2,.8,.2,1);
+  box-shadow: 0 8px 30px rgb(18 18 18 / .15);
+}
+
+.project-cursor.is-visible {
+  opacity: 1;
+  transform: translate3d(-50%, -50%, 0) scale(1);
+}
+
+/* Scroll-in motion only becomes hidden after JavaScript has registered it. */
+html.motion-enabled .motion-reveal {
+  opacity: 0;
+  transform: translateY(42px);
+  transition: opacity 800ms cubic-bezier(.16,1,.3,1), transform 800ms cubic-bezier(.16,1,.3,1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html.motion-enabled .motion-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.local-image-fallback {
+  object-fit: contain !important;
+  padding: 12%;
+  background: var(--crimson, #e44436);
+}
+
+/* A few source pages intentionally ship poster-only reels. Avoid exposing dead controls. */
+.local-video-poster-only video {
+  visibility: hidden;
+}
+
+.local-video-poster-only .td__seek,
+.local-video-poster-only .td__toggle {
+  display: none !important;
+}
+
+.local-video-poster-only::after {
+  content: "project film preview";
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  z-index: 4;
+  color: var(--cream, #f0ecdf);
+  font: 600 11px/1 var(--font-archivo-narrow);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: rgb(18 18 18 / .72);
+  padding: 8px 10px;
+}
+
+@media (pointer: coarse), (max-width: 760px) {
+  .project-cursor { display: none; }
+  .card__link { transform: none !important; }
+  .card__img--colour { clip-path: inset(0); opacity: 0; }
+  .card.is-project-hovered .card__img--colour { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-cursor { display: none; }
+  .card__link,
+  .card__frame img,
+  .card__text,
+  .card__title,
+  .card__caption,
+  html.motion-enabled .motion-reveal {
+    transition: none !important;
+    transform: none !important;
+  }
+  html.motion-enabled .motion-reveal { opacity: 1; }
+}
+
+/* Shared personal wordmark, scaled to the original header's dimensions. */
+.wordmark { display: flex; align-items: center; justify-content: center; }
+.wordmark > svg { display: none !important; }
+.wordmark::after {
+  content: "Gaurang Vank";
+  color: var(--crimson, #e44436);
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, 7.7vw, 132px);
+  letter-spacing: -.075em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.landing__wordmark .wordmark::after { font-size: clamp(32px, 14vw, 240px); }
+
+/* The supplied transparent mark replaces the temporary name treatment. */
+.wordmark::after,
+.landing__wordmark .wordmark::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url("./gaurang-logo.png") center / contain no-repeat;
+}
+.wordmark { width: clamp(52px, 6.3vw, 102px); height: clamp(52px, 6.3vw, 102px); aspect-ratio: 1; }
+.landing__wordmark {
+  position: relative !important;
+  top: auto !important;
+  width: 100%;
+  height: clamp(112px, 16.8vw, 231px);
+  aspect-ratio: auto !important;
+  contain: none !important;
+  padding: 4px var(--gutter) 0;
+}
+.pin-spacer:has(> .landing__wordmark) {
+  height: clamp(112px, 16.8vw, 231px) !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+.landing__wordmark-in {
+  position: relative !important;
+  inset: auto !important;
+  width: clamp(112px, 16.8vw, 231px) !important;
+  margin-inline: auto;
+  transform: none !important;
+}
+.landing__wordmark .wordmark { width: 100%; height: 100%; aspect-ratio: 1; }
+.landing__body { min-height: calc(100svh - clamp(112px, 16.8vw, 231px) - var(--nav-h)); }
+.brand-logo-inline { display: inline-block; vertical-align: middle; width: 1.19em; height: 1.19em; object-fit: contain; }
+.site-foot .brand-logo-inline { width: 1.68em; height: 1.68em; }
+a[href*="instagram.com/"] { display: none !important; }
+main.project:not([data-project="planit"]):not([data-project="planit-overview"]) .vrpo__more-link { display: none !important; }
+
+/* Use the supplied G mark during the original loading transition. */
+.loader__s {
+  background: url("./gaurang-logo-cream.png") center / contain no-repeat;
+  border-radius: 0;
+}
+.loader__s svg { visibility: hidden !important; }
+
+/* The mirrored About page has no server-side intro completion event. */
+html.site-local-ready .about[data-intro="pending"] .about__care,
+html.site-local-ready .about[data-intro="pending"] .about__interests,
+html.site-local-ready .about[data-intro="pending"] .about__plate,
+html.site-local-ready .about[data-intro="pending"] .about__lower,
+html.site-local-ready .about [data-typed="pending"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html.site-local-ready .about__flow:not(.is-live) .about__wave {
+  visibility: visible !important;
+}
+html.site-local-ready .about__flow:not(.is-live) .about__card {
+  opacity: 1 !important;
+}
+
+/* A calm colour fade on hover and keyboard focus, without tilt or a cursor. */
+.card__link, .card__link:hover, .card__link:focus-visible { transform: none !important; }
+.card__frame::after { display: none; }
+.card__frame img { transform: none !important; }
+.card__img--base { filter: grayscale(1); }
+.card__img--colour {
+  clip-path: none !important;
+  opacity: 0;
+  transition: opacity 650ms ease !important;
+}
+.card__link:hover .card__img--colour,
+.card__link:focus-visible .card__img--colour { opacity: 1; }
+.card__text, .card__title, .card__caption { transform: none !important; }
+.project-cursor { display: none !important; }
+html.site-local-ready .about__care,
+html.site-local-ready .about__interests,
+html.site-local-ready .about__plate,
+html.site-local-ready .about__lower,
+html.site-local-ready .about__card { opacity: 1; visibility: visible; }
